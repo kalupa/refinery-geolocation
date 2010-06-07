@@ -1,0 +1,121 @@
+<% content_for :head_libraries do %>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" type="text/javascript"></script>
+	<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<%= RefinerySetting.find_or_set(:google_maps_api_key, 'XXXXXX') %>&amp;sensor=false" type="text/javascript"></script>
+<% end %>	
+
+<style type="text/css" media="screen">
+</style>
+
+<% content_for :body_content_left do %>
+	<% form_tag 'location', :id => 'search_distance' do -%>
+	  <%= label_tag :location, "Location" -%>
+	  <%= text_field_tag :location, "", :class => 'larger' -%>		
+		<%= label_tag :radius %>
+		<%= select :radius, 'dst', [10, 15, 25, 50, 100, 200] %>
+		<%= radio_button_tag 'unit', 'kilometers' %>
+		<%= label_tag 'km' %>
+		<%= radio_button_tag 'unit', 'miles', true %>
+		<%= label_tag 'miles' %>
+		<br /><br />
+		<%= submit_tag "Search" %>
+	<% end -%>
+			<br style="clear:both" />
+		
+			<div id="map" style="float:left; overflow: hidden; width:400px; height:300px;border: 1px solid black; text-align: left;"></div>
+<% end %>
+
+<% content_for :body_content_right do %>
+<div id="sidebar" style="float: left;overflow: auto; font-size: 11px; color: #000; text-align: left "></div>
+<% end %>
+
+<%= render :partial => "/shared/content_page" %>
+
+<script type="text/javascript" charset="utf-8">
+	var map;
+	var geocoder;
+
+	jQuery(document).ready(function($) {
+
+		var load = function() {
+		  if (GBrowserIsCompatible()) {
+		    geocoder = new GClientGeocoder();
+		    map = new GMap2(document.getElementById('map'));
+		    map.addControl(new GSmallMapControl());
+		    map.addControl(new GMapTypeControl());
+		    map.setCenter(new GLatLng(40, -100), 4);
+		  }
+		}();
+
+		function searchLocations(e) {
+			e.preventDefault();
+			$('#sidebar').html('Searching ... ');
+	    var address = $('#location').val();
+	    geocoder.getLatLng(address, function(latlng) {
+	      if (!latlng) {
+	        $('#sidebar').html('"' + address + '" not found.');
+	      } else {
+	        searchLocationsNear(latlng);
+	      }
+	    });
+	  }
+
+	  function searchLocationsNear(center) {
+	    var radius = $('#radius_dst').val();
+			var searchUrl = '/geolocations/';
+			var searchData = { 
+				lat: center.lat(), 
+				lng: center.lng(), 
+				dst: radius, 
+				unit: $('input[name=unit]:checked').val(), 
+				lim: '20' 
+			}
+			$.get(searchUrl,searchData, function(data) {	
+				map.clearOverlays();
+				var sidebar = $('#sidebar').html('');
+				var bounds = new GLatLngBounds();
+				$(data).each(function() {	
+					var m = this;
+					var name = m.name;
+					var address = m.address;
+					var distance = parseInt( m.distance );
+					var point = new GLatLng( parseFloat( m.lat ), parseFloat( m.lng ));
+					var marker = createMarker(point, name, address);
+					map.addOverlay(marker);
+					bounds.extend(point);
+	        sidebar.append(createSidebarEntry(marker, name, address, distance));
+				});
+				map.setCenter(bounds.getCenter(), map.getBoundsZoomLevel(bounds));			
+			},'json');
+	  }
+
+		function createMarker(point, name, address) {
+			var marker = new GMarker(point);
+			var html = '<b>' + name + '</b> <br/>' + address;
+			$(marker).click(function() {
+				this.openInfoWindowTabsHtml(html);
+			});
+	   return marker;
+		}
+	  function createSidebarEntry(marker, name, address, distance) {
+			var unit = $('input[name=unit]:checked').val() == 'miles' ? ' miles' : "km";
+			var div = $('<div/>')
+				.html('<b>' + name + '</b> (' + distance.toFixed(1) + unit +')<br/>' + address)
+				.css({
+					cursor: 'pointer',
+					marginBottom: '5px'
+				})
+				.click(function() {
+					$(marker).click();
+				})	
+				.hover(function() {
+					$(this).css({backgroundColor: '#eee'});
+				}, function() {
+					$(this).css({backgroundColor: '#fff'});
+				});
+	    return div;
+	  }
+
+		$('#search_distance').submit(searchLocations);	
+
+	});
+</script>

@@ -1,0 +1,17 @@
+<li class='clearfix record <%= cycle("on", "on-hover") %>' id="<%= dom_id(geolocation) -%>">
+  <span class='title'>
+    <%=h geolocation.name %>
+    <span class="preview">&nbsp;</span>
+
+    <span class='actions'>
+      <%= link_to refinery_icon_tag("application_go.png"), geolocation_url(geolocation),
+          :title => 'View this geolocation<br/><em>Opens in a new window</em>',
+          :target => "_blank" %>
+      <%= link_to refinery_icon_tag("application_edit.png"), edit_admin_geolocation_path(geolocation),
+           :title => 'Edit this geolocation' %>
+      <%= link_to refinery_icon_tag("delete.png"), admin_geolocation_path(geolocation),
+          :class => "cancel confirm-delete",
+          :title => 'Remove this geolocation forever' %>
+    </span>
+  </span>
+</li>

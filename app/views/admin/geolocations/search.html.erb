@@ -1,0 +1,8 @@
+
+<% for location in @locations -%>
+	<strong>id:</strong> <%= location.id %><br />
+	<strong>name:</strong> <%= location.name %><br />
+	<strong>address:</strong> <%= location.address %><br />
+	<strong>distance:</strong> <%= location.distance %> <%= params[:unit] %><br />
+	<br />
+<% end -%>

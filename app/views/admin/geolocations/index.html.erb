@@ -1,0 +1,42 @@
+<div id='actions'>
+  <ul>
+    <li>
+      <%= render :partial => "/shared/admin/search", :locals => {:url => admin_geolocations_url} %>
+    </li>
+    <li>
+      <%= link_to "Create New Geolocation", new_admin_geolocation_url, :class => "add_icon" %>
+    </li>
+  <% if !searching? and Geolocation.count > 1 %>
+    <li>
+      <%= link_to "Reorder Geolocations", admin_geolocations_url, :id => "reorder_action", :class => "reorder_icon" %>
+      <%= link_to "Done Reordering Geolocations", admin_geolocations_url, :id => "reorder_action_done", :style => "display: none;", :class => "reorder_icon" %>
+    </li>
+  <% end %>
+  </ul>
+</div>
+<div id='records'>
+  <% if searching? %>
+    <h2>Search Results for "<%= params[:search] %>"</h2>
+    <% if @geolocations.any? %>
+      <%= render :partial => "geolocation", :collection => @geolocations %>
+    <% else %>
+      <p>Sorry, no results found.</p>
+    <% end %>
+  <% else %>
+    <% if @geolocations.any? %>
+      <%= will_paginate @geolocations, :previous_label => '&laquo;', :next_label => '&raquo;' %>
+       <ul id='sortable_list'>
+        <%= render :partial => "sortable_list" %>
+       </ul>
+      <%= will_paginate @geolocations, :previous_label => '&laquo;', :next_label => '&raquo;' %>
+    <% else %>
+      <p>
+        <strong>
+          There are no geolocations yet.
+          Click "Create New Geolocation" to add your first geolocation.
+        </strong>
+      </p>
+    <% end %>
+  <% end %>
+</div>
+<%= render :partial => "/shared/admin/make_sortable", :locals => {:tree => false } if !searching? and Geolocation.count > 1 %>

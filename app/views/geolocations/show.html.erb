@@ -1,0 +1,40 @@
+<% content_for :body_content_title do %>
+  <%= @geolocation.name %>
+<% end %>
+
+<% content_for :body_content_left do %>
+  
+  <div>
+    <h3>Name</h3>
+    <%= @geolocation.name %>
+  </div>
+  
+  <div>
+    <h3>Address</h3>
+    <%= @geolocation.address %>
+  </div>
+  
+  <div>
+    <h3>Lat</h3>
+    <%= @geolocation.lat %>
+  </div>
+  
+  <div>
+    <h3>Lng</h3>
+    <%= @geolocation.lng %>
+  </div>
+  
+<% end %>
+
+<% content_for :body_content_right do %>
+  <h2>Other Geolocations</h2>
+  <ul id="geolocations">
+    <% @geolocations.each do |geolocation| %>
+      <li>
+        <%= link_to geolocation.name, geolocation_url(geolocation) %>
+      </li>
+    <% end %>
+  </ul>
+<% end %>
+
+<%= render :partial => "/shared/content_page" %>
