@@ -12,6 +12,14 @@ Administration panel
 
 * Add locations
 
+## Dependencies:
+
+geokit-rails, [from](http://github.com/andre/geokit-rails)
+
+which depends on the geokit gem
+
+> gem install geokit
+
 ## Installation (as a plugin)
 
 First, make sure you've run the migration on RefineryCMS (db:setup / db:migrate).
@@ -28,7 +36,7 @@ Copy the migration with
 
 > rake db:migrate
 
-Make sure you update your API key in Settings
+Make sure you update your API key in Geolocations -> Settings
 
 ## Credit
 

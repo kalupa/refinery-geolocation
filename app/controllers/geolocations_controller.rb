@@ -7,7 +7,9 @@ class GeolocationsController < ApplicationController
     # you can use meta fields from your model instead (e.g. browser_title)
     # by swapping @page for @geolocation in the line below:
     # present(@page)
-		@geolocations = Geolocation.find_by_distance_from ( params[:lat], params[:lng], params[:dst], params[:unit], params[:lim] )
+		# @geolocations = Geolocation.find_by_distance_from ( params[:lat], params[:lng], params[:dst], params[:unit], params[:lim] )
+		# origin_point = [params[:lat].to_f, params[:lng].to_f]
+		@geolocations = Geolocation.find(:all, :origin => [params[:lat].to_f, params[:lng].to_f], :within => params[:dst].to_i, :units => params[:unit].to_s,  :order=>'distance', :limit => params[:lim].to_i)
 
 		respond_to do |format|
 	    format.html # search.html.erb
