@@ -1,6 +1,6 @@
 class Geolocation < ActiveRecord::Base
 
-	acts_as_mappable
+	acts_as_mappable if self.table_exists?
 	
   # acts_as_indexed :fields => [:name, :address, :lat, :lng],
   #                 :index_file => [Rails.root.to_s, "tmp", "index"]
